@@ -1,21 +1,10 @@
-FROM alpine as build
+FROM 0x01be/opendp:build as build
 
-RUN apk add --no-cache --virtual opendp-build-dependecies \
-    git \
-    build-base \
-    cmake \
-    bison \
-    flex \
-    zlib-dev
+FROM alpine
 
-ENV REVISION=master
-RUN git clone --recursive --branch ${REVISION} https://github.com/kareefardi/OpenDP.git /opendp
+RUN apk add --no-cache --virtual opendp-runtime-dependecies \
+    libstdc++ \
+    zlib
 
-WORKDIR /opendp/build
-
-RUN cmake \
-    -DCMAKE_INSTALL_PREFIX=/opt/opendp \
-    ..
-RUN make
-RUN make install
+COPY --from=build /opt/opendp/ /opt/opendp/
 
